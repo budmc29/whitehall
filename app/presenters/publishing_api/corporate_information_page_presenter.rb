@@ -18,6 +18,7 @@ module PublishingApi
         .new(corporate_information_page)
         .base_attributes
         .merge(
+          document_type: display_type_key,
           schema_name: SCHEMA_NAME,
         )
     end
@@ -26,5 +27,7 @@ module PublishingApi
 
     attr_accessor :corporate_information_page
     attr_writer :update_type
+
+    def_delegator :corporate_information_page, :display_type_key
   end
 end

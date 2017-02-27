@@ -17,6 +17,7 @@ module PublishingApi
       BaseItemPresenter
         .new(corporate_information_page)
         .base_attributes
+        .merge(PayloadBuilder::PublicDocumentPath.for(corporate_information_page))
         .merge(
           description: corporate_information_page.summary,
           details: details,

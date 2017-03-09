@@ -10,7 +10,7 @@ class DocumentLocaleParamCanonicalisationTest < ActionDispatch::IntegrationTest
     u.to_s
   end
 
-  announcement_redir_document_types = %w(news_article speech)
+  announcement_redir_document_types = %w(speech)
   document_types_with_no_index = %w(case_study)
   normal_document_types = [
     "world_location_news_article",

@@ -46,6 +46,8 @@ module PublishingApi
         .extract(link_keys)
         .merge(Ministers.for(news_article))
         .merge(PayloadBuilder::TopicalEvents.for(news_article))
+        .merge(PayloadBuilder::Roles.for(news_article))
+        .merge(PayloadBuilder::People.for(news_article))
     end
 
   private

@@ -71,6 +71,9 @@ class Admin::EditionWorkflowController < Admin::BaseController
   end
 
   def confirm_force_publish
+    unless @edition.valid?(:publish)
+      redirect_to admin_edition_path(@edition), alert: @edition.errors[:base].join('. ')
+    end
   end
 
   def force_publish

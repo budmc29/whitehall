@@ -78,6 +78,7 @@ end
 gem 'sass', '3.4.9'
 gem 'sassc-rails'
 gem 'uglifier'
+gem 'govuk_taxonomy_helpers', '~> 0.1.0'
 
 group :development, :test do
   gem 'parallel_tests'

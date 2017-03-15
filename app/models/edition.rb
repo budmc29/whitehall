@@ -45,6 +45,7 @@ class Edition < ActiveRecord::Base
 
   validates_with SafeHtmlValidator
   validates_with NoFootnotesInGovspeakValidator, attribute: :body
+  validates_with TaxonValidator, on: :publish
 
   validates :creator, presence: true
   validates :title, presence: true, if: :title_required?, length: { maximum: 255 }
@@ -422,6 +423,22 @@ class Edition < ActiveRecord::Base
 
   def can_be_tagged_to_taxonomy?
     false
+  end
+
+  def expanded_links
+    @expanded_links ||= begin
+      expanded_links_response = Whitehall.publishing_api_v2_client.get_expanded_links(content_id)
+      content_item = {
+        "content_id" => content_id,
+        "base_path" => slug,
+        "title" => title,
+      }
+
+      GovukTaxonomyHelpers::LinkedContentItem.from_publishing_api(
+        content_item: content_item,
+        expanded_links: expanded_links_response
+      )
+    end
   end
 
   def included_in_statistics_feed?

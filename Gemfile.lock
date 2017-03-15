@@ -183,6 +183,7 @@ GEM
       sidekiq (~> 4.1)
       sidekiq-logging-json (~> 0.0)
       sidekiq-statsd (~> 0.1)
+    govuk_taxonomy_helpers (0.1.0)
     graphviz_transitions (0.1.2)
       ruby-graphviz
       transitions
@@ -487,6 +488,7 @@ DEPENDENCIES
   govuk_admin_template (= 4.2.0)
   govuk_frontend_toolkit (= 5.0.3)
   govuk_sidekiq (= 0.0.4)
+  govuk_taxonomy_helpers (~> 0.1.0)
   graphviz_transitions
   invalid_utf8_rejector (~> 0.0.1)
   isbn_validation
@@ -547,4 +549,4 @@ DEPENDENCIES
   whenever (= 0.9.4)
 
 BUNDLED WITH
-   1.13.2
+   1.14.5

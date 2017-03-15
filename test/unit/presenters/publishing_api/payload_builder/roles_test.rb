@@ -5,8 +5,18 @@ module PublishingApi
     class PayloadBuilderRolesTest < ActiveSupport::TestCase
       test "returns empty hash if no roles" do
         edition_with_no_roles = Object.new
+
         expected_hash = {}
+
         assert_equal expected_hash, Roles.for(edition_with_no_roles)
+      end
+
+      test "returns empty hash if role_appointment is nil" do
+        stubbed_edition = stub(role_appointment: nil)
+
+        expected_hash = {}
+
+        assert_equal expected_hash, Roles.for(stubbed_edition)
       end
 
       test "returns the role if a role_appointment_id exists" do
@@ -14,6 +24,14 @@ module PublishingApi
         stubbed_edition = stub(role_appointment: role_appointment)
 
         expected_hash = { roles: [role_appointment.role.content_id] }
+
+        assert_equal expected_hash, Roles.for(stubbed_edition)
+      end
+
+      test "returns empty hash if role_appointments are nil" do
+        stubbed_edition = stub(role_appointments: nil)
+
+        expected_hash = {}
 
         assert_equal expected_hash, Roles.for(stubbed_edition)
       end

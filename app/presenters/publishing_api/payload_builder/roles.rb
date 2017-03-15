@@ -1,6 +1,8 @@
 module PublishingApi
   module PayloadBuilder
     class Roles
+      include RoleAppointmentHelper
+
       attr_reader :item
 
       def self.for(item)
@@ -17,14 +19,16 @@ module PublishingApi
           .merge(roles_from_role_appointments)
       end
 
+    private
+
       def roles_from_role_appointment
-        return {} unless item.respond_to?(:role_appointment)
+        return {} unless has_role_appointment?(item)
 
         { roles: [item.role_appointment.role.content_id] }
       end
 
       def roles_from_role_appointments
-        return {} unless item.respond_to?(:role_appointments)
+        return {} unless has_role_appointments?(item)
 
         { roles: item.role_appointments.map(&:role).collect(&:content_id) }
       end

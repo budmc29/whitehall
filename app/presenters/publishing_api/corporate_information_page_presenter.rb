@@ -36,6 +36,7 @@ module PublishingApi
             organisations
           )
         )
+        .merge(CorporateInformationPages.for(corporate_information_page))
     end
 
   private
@@ -230,6 +231,49 @@ module PublishingApi
 
       def translation_for_group(group, namespace = :corporate_information)
         helpers.t("organisation.#{namespace}.#{group}")
+      end
+    end
+
+    class CorporateInformationPages
+      extend Forwardable
+
+      def self.for(corporate_information_page)
+        new(corporate_information_page).call
+      end
+
+      def initialize(corporate_information_page)
+        self.corporate_information_page = corporate_information_page
+      end
+
+      def call
+        return {} unless pages.present?
+
+        {
+          corporate_information_pages: pages,
+        }
+      end
+
+    private
+
+      attr_accessor :corporate_information_page
+      def_delegator :corporate_information_page, :owning_organisation, :organisation
+
+      def pages
+        @pages ||= [
+          page_content_id_for('about-our-services'),
+          page_content_id_for('personal-information-charter'),
+          page_content_id_for('publication-scheme'),
+          page_content_id_for('social-media-use'),
+          page_content_id_for('welsh-language-scheme'),
+        ].compact
+      end
+
+      def page_content_id_for(slug)
+        organisation
+          .corporate_information_pages
+          .published
+          .for_slug(slug)
+          .try(:content_id)
       end
     end
 

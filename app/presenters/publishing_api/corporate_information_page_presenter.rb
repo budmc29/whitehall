@@ -95,7 +95,8 @@ module PublishingApi
         return {} unless organisation_has_any_transparency_pages?
 
         {
-          corporate_information_groups: corporate_information_groups,
+          corporate_information_groups: corporate_information_groups
+            .reject { |group| group[:contents].empty? },
         }
       end
 

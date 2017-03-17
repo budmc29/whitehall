@@ -50,6 +50,8 @@ private
       PublishingApi::CaseStudyPresenter
     when Consultation
       PublishingApi::ConsultationPresenter
+    when CorporateInformationPage
+        PublishingApi::CorporateInformationPagePresenter
     when ::DocumentCollection
       PublishingApi::DocumentCollectionPresenter
     when ::DetailedGuide
@@ -67,8 +69,6 @@ private
     when WorldLocationNewsArticle
       PublishingApi::WorldLocationNewsArticlePresenter
     else
-      # This is a catch-all clause for the following classes:
-      # - CorporateInformationPage
       # The presenter implementation for all of these models is identical and
       # the structure of the presented payload is the same.
       PublishingApi::GenericEditionPresenter

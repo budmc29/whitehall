@@ -108,6 +108,17 @@ module PublishingApi::ConsultationPresenterTest
       assert_equal actual_links, expected_links
     end
 
+    test 'edition links' do
+      expected_links = {
+        organisations: consultation.organisations.map(&:content_id),
+        parent: [],
+        policy_areas: consultation.topics.map(&:content_id),
+        related_policies: [],
+        topics: []
+      }
+      assert_equal presented_content[:links], expected_links
+    end
+
     test 'body details' do
       body_double = Object.new
 
@@ -598,6 +609,42 @@ module PublishingApi::ConsultationPresenterTest
 
     test 'update type' do
       assert_equal 'major', presented_consultation.update_type
+    end
+  end
+
+  class ConsultationWithMinisterialRoleAppointments < TestCase
+    setup do
+      self.consultation = create(
+        :consultation,
+        role_appointments: create_list(:ministerial_role_appointment, 2)
+      )
+    end
+
+    test 'ministers' do
+      expected_content_ids = consultation
+        .role_appointments
+        .map(&:person)
+        .map(&:content_id)
+
+      assert_equal expected_content_ids, presented_links[:ministers]
+    end
+
+    test "people" do
+      expected_content_ids = consultation
+        .role_appointments
+        .map(&:person)
+        .map(&:content_id)
+
+      assert_equal expected_content_ids, presented_links[:people]
+    end
+
+    test "roles" do
+      expected_content_ids = consultation
+        .role_appointments
+        .map(&:role)
+        .map(&:content_id)
+
+      assert_equal expected_content_ids, presented_links[:roles]
     end
   end
 end

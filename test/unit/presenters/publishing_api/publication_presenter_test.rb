@@ -68,8 +68,11 @@ class PublishingApi::PublicationPresenterTest < ActiveSupport::TestCase
       world_locations: [],
       topical_events: [topical_event.content_id],
       related_policies: ['5d37821b-7631-11e4-a3cb-005056011aef'],
-      policy_areas: publication.topics.map(&:content_id)
+      policy_areas: publication.topics.map(&:content_id),
+      roles: publication.role_appointments.map(&:role).collect(&:content_id),
+      people: publication.role_appointments.map(&:person).collect(&:content_id)
     }
+    expected_content.merge!(links: expected_links)
 
     presented_item = present(publication)
 
@@ -85,6 +88,7 @@ class PublishingApi::PublicationPresenterTest < ActiveSupport::TestCase
       presented_item.content[:details].delete(:body)
     assert_equal expected_content[:details], presented_item.content[:details].except(:body)
     assert_equal expected_links, presented_item.links
+    assert_equal expected_links, presented_item.content[:links]
     assert_equal publication.document.content_id, presented_item.content_id
   end
 
@@ -93,10 +97,15 @@ class PublishingApi::PublicationPresenterTest < ActiveSupport::TestCase
     create(:specialist_sector, topic_content_id: "content_id_1", edition: edition, primary: true)
     create(:specialist_sector, topic_content_id: "content_id_2", edition: edition, primary: false)
 
-    links = present(edition).links
+    presented = present(edition)
+    links = presented.links
+    edition_links = presented.content[:links]
 
     assert_equal links[:topics], %w(content_id_1 content_id_2)
     assert_equal links[:parent], %w(content_id_1)
+
+    assert_equal edition_links[:topics], %w(content_id_1 content_id_2)
+    assert_equal edition_links[:parent], %w(content_id_1)
   end
 
   test "links hash includes lead and supporting organisations in correct order" do
@@ -121,6 +130,7 @@ class PublishingApi::PublicationPresenterTest < ActiveSupport::TestCase
 
     assert_valid_against_links_schema({ links: presented_item.links }, 'publication')
     assert_equal expected_links_hash, presented_item.links
+    assert_equal expected_links_hash, presented_item.content[:links]
   end
 
   test "details hash includes full document history" do
@@ -146,6 +156,7 @@ class PublishingApi::PublicationPresenterTest < ActiveSupport::TestCase
     presented_item = present(publication)
     assert_valid_against_links_schema({ links: presented_item.links }, 'publication')
     assert_equal [location.content_id], presented_item.links[:world_locations]
+    assert_equal [location.content_id], presented_item.content[:links][:world_locations]
   end
 
   test "documents include the alternative format contact email" do

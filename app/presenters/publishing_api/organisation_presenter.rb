@@ -25,6 +25,9 @@ module PublishingApi
         description: nil,
         details: details,
         document_type: item.class.name.underscore,
+        links: {
+          featured_policies: featured_policies_links,
+        },
         public_updated_at: item.updated_at,
         rendering_app: Whitehall::RenderingApp::WHITEHALL_FRONTEND,
         schema_name: schema_name,
@@ -49,7 +52,8 @@ module PublishingApi
         logo: {
           formatted_title: formatted_title,
           crest: crest,
-        },
+          image: image,
+        }.compact,
       }
     end
 
@@ -66,9 +70,26 @@ module PublishingApi
       format_with_html_line_breaks(item.logo_formatted_name)
     end
 
+    def image
+      return unless item.custom_logo_selected?
+
+      {
+        url: ActionController::Base.helpers.image_url(
+          item.logo.url, host: Whitehall.public_asset_host
+        ),
+        alt_text: item.name,
+      }
+    end
+
     def brand
       brand_colour = item.organisation_brand_colour
       brand_colour ? brand_colour.class_name : nil
+    end
+
+    def featured_policies_links
+      # Publishing API will reject duplicate content_ids here so distinct is
+      # used
+      item.featured_policies.order(:ordering).distinct.pluck(:policy_content_id)
     end
   end
 end

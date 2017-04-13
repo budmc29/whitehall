@@ -24,6 +24,7 @@ module PublishingApi
           rendering_app: item.rendering_app,
           schema_name: "fatality_notice",
           details: details,
+          links: links,
         )
         content.merge!(PayloadBuilder::AccessLimitation.for(item))
         content.merge!(PayloadBuilder::FirstPublishedAt.for(item))
@@ -35,6 +36,12 @@ module PublishingApi
         %i(organisations policy_areas)
       ).merge(
         field_of_operation: [item.operational_field.content_id]
+      ).merge(
+        PayloadBuilder::People.for(item, :ministers)
+      ).merge(
+        PayloadBuilder::People.for(item, :people)
+      ).merge(
+        PayloadBuilder::Roles.for(item)
       )
     end
 

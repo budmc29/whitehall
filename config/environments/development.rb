@@ -16,6 +16,12 @@ Whitehall::Application.configure do
   config.action_controller.perform_caching = false
   config.action_controller.action_on_unpermitted_parameters = :raise
 
+  # Send emails to the local MailHog instance
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    port: 1025
+  }
+
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
 
@@ -25,17 +31,18 @@ Whitehall::Application.configure do
   config.sass.cache = false
 
   config.slimmer.asset_host = ENV['STATIC_DEV'] || Plek.find('static')
+  config.asset_host = Whitehall.admin_root
 
   # Disable cache in development
   config.cache_store = :null_store
 
   if ENV['SHOW_PRODUCTION_IMAGES']
-    orig_host = config.asset_host
     config.asset_host = Proc.new do |source|
-      if source =~ %r{system/uploads}
-        "https://assets.digital.cabinet-office.gov.uk"
+      local_file = File.join(Whitehall.clean_uploads_root, source.sub('/government/uploads', ''))
+      if !File.exist?(local_file) && source =~ %r{system/uploads}
+        "https://assets.publishing.service.gov.uk"
       else
-        orig_host
+        Whitehall.admin_root
       end
     end
   end

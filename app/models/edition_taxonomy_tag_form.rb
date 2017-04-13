@@ -5,9 +5,7 @@ class EditionTaxonomyTagForm
 
   def self.load(content_id)
     begin
-      content_item = Whitehall
-        .publishing_api_v2_client
-        .get_links(content_id)
+      content_item = Services.publishing_api.get_links(content_id)
 
       selected_taxons = content_item["links"]["taxons"] || []
       previous_version = content_item["version"] || 0
@@ -27,8 +25,8 @@ class EditionTaxonomyTagForm
   end
 
   def publish!
-    Whitehall
-      .publishing_api_v2_client
+    Services
+      .publishing_api
       .patch_links(
         edition_content_id,
         links: { taxons: most_specific_taxons },
@@ -40,9 +38,17 @@ class EditionTaxonomyTagForm
     Taxonomy.education
   end
 
+  def draft_taxons
+    Taxonomy.drafts
+  end
+
+  def all_taxons
+    education_taxons.tree + draft_taxons.flat_map(&:tree)
+  end
+
   # Ignore any taxons that already have a more specific taxon selected
   def most_specific_taxons
-    education_taxons.tree.each_with_object([]) do |taxon, list_of_taxons|
+    all_taxons.each_with_object([]) do |taxon, list_of_taxons|
       content_ids = taxon.descendants.map(&:content_id)
 
       any_descendants_selected = selected_taxons.any? do |selected_taxon|

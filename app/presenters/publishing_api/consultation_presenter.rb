@@ -26,6 +26,7 @@ module PublishingApi
           public_updated_at: public_updated_at,
           rendering_app: Whitehall::RenderingApp::GOVERNMENT_FRONTEND,
           schema_name: SCHEMA_NAME,
+          links: links,
         )
     end
 
@@ -33,6 +34,9 @@ module PublishingApi
       LinksPresenter
         .new(consultation)
         .extract(%i(organisations parent policy_areas related_policies topics))
+        .merge(PayloadBuilder::People.for(consultation, :ministers))
+        .merge(PayloadBuilder::People.for(consultation, :people))
+        .merge(PayloadBuilder::Roles.for(consultation))
     end
 
   private

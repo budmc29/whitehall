@@ -25,6 +25,7 @@ module PublishingApi
         #item.rendering_app is switched when preview is ready
         rendering_app: Whitehall::RenderingApp::GOVERNMENT_FRONTEND,
         schema_name: "publication",
+        links: links,
       )
       content.merge!(PayloadBuilder::PublicDocumentPath.for(item))
       content.merge!(PayloadBuilder::AccessLimitation.for(item))
@@ -46,6 +47,10 @@ module PublishingApi
       ).merge(
         ministers: ministers,
         related_statistical_data_sets: related_statistical_data_sets,
+      ).merge(
+        PayloadBuilder::Roles.for(item)
+      ).merge(
+        PayloadBuilder::People.for(item, :people)
       )
     end
 
